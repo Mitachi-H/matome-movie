@@ -11,6 +11,10 @@ from script.make_tile import makeTile
 from script.make_video import makeVideo
 
 def delete_files(dir_names):
+    """
+    指定したdir内のファイルを削除する関数
+    imageにはblank画像が必要なので削除した場合は追加する
+    """
     for target_dir in dir_names.keys():
         if dir_names[target_dir]:
             shutil.rmtree(target_dir)
@@ -25,19 +29,22 @@ def delete_files(dir_names):
                 cv2.imwrite('./images/blank_tile.jpg',blank_tile)
                 cv2.imwrite('./images/blank_movie.jpg',blank_movie)
 
-delete_files({
-        "arranged_wikiList":True,
-        "description":True,
-        "hashtagList":True,
-        "images":True,
-        "movies":True,
-        "squares":True,
-        "tiles":True,
-        "wikiList":True,
-        "wikis":True,
-})
+# delete_files({
+#         "arranged_wikiList":True,
+#         "description":True,
+#         "hashtagList":True,
+#         "images":True,
+#         "movies":True,
+#         "squares":True,
+#         "tiles":True,
+#         "wikiList":True,
+#         "wikis":True,
+# })
 
 def main(persons,arranged = False,least_num=8):
+    """
+    各ファイルのclassを呼び出し実行する。
+    """
     for person in persons:
         try:
             image_num = downloadWiki(person)(least_num)
