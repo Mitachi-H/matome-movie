@@ -1,6 +1,5 @@
 import cv2,glob
 import numpy as np
-import matplotlib.pyplot as plt
 import moviepy.editor as mp
 from PIL import Image, ImageDraw, ImageFont
 
@@ -27,18 +26,28 @@ class makeVideo():
         self.add_song()
     
     def open_tiles(self):
+        """
+        作成したtileをロードする
+        最後残像が残らないためにblank tileを追加する
+        """
         files = glob.glob("./tiles/"+self.name+"/*")
         for tile_path in files:
             self.tiles.append(cv2.imread(tile_path))
         self.tiles.append(self.blank_tile)
     
     def set_video(self):
+        """
+        videoWriterの初期設定を行う
+        """
         self.video = cv2.VideoWriter('./movies/'+self.name+'.mp4',
                       cv2.VideoWriter_fourcc(*"mp4v"),
                       self.fps, (1280, 720))
     
-        # 参考記事　https://qiita.com/mo256man/items/82da5138eeacc420499d
+    # 参考記事　https://qiita.com/mo256man/items/82da5138eeacc420499d
     def add_title_tile(self):
+        """
+        title（三笘薫 エピソード など）と書かれたtileを作成しtitle_tileに保存数
+        """
         fontFace = self.font_path
         fontScale = 100
         color=(255,255,255)
@@ -55,6 +64,10 @@ class makeVideo():
         self.title_tile = np.array(imgPIL, dtype = np.uint8)
     
     def add_frame(self):
+        """
+        作成したtitle_tile、tileを映像化する。
+        tileが並んだ長い壁を、カメラが動きながら写すイメージ
+        """
         # 最初の数秒はtitleを見せる
         first_second = 2
         for _ in range(first_second*self.fps):
@@ -100,7 +113,12 @@ class makeVideo():
             self.video.write(frame)
             camera_left += camera_speed
 
-    def add_song(self,bgm_num=1):      
+    def add_song(self,bgm_num=1):  
+        """
+        完成した動画に音声を追加して保存する。
+        コーディックの関係で一度出力してから再度読み込み音声を合成する。
+        権利関係等でめんどくさい実装になった。
+        """    
         video_path ='./movies/'+self.name+'.mp4'      
         chumk_path = "./movies/aaa.mp4" 
 
@@ -109,6 +127,6 @@ class makeVideo():
         # mp4 H.264に変換                                             
         new_clip = mp.VideoFileClip(chumk_path).subclip()
         duration = new_clip.duration
-        last_second = 10
+        last_second = 5
         audio_clip = mp.AudioFileClip("./songs/bgm1.mp3").subclip(0,duration+last_second)
         new_clip.set_audio(audio_clip).write_videofile(video_path)

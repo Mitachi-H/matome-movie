@@ -59,4 +59,5 @@ def main(persons,arranged = False,least_num=8):
             print(f"人物：{person}--textが十分でない可能性があります--")
         makeVideo(person)()
 
-# main(persons)
+persons = []
+main(persons)

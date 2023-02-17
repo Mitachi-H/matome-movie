@@ -8,15 +8,21 @@ class cutImage():
         self.square_num = 1
 
     def __call__(self):
+        """
+        画像をファイルを読み込み、適切なものを選択する
+        その後正方形に変換して保存する
+        """
         files = glob.glob("./images/"+self.name+"/*")
         for img_path in files:
             cut_img = self.arrange_to_square(img_path)
             if not cut_img is None:
                 self.save_square(cut_img)
     
+    # 参考記事 https://self-development.info/%E3%80%90python%E3%80%91retinaface%EF%BC%88retina-face%EF%BC%89%E3%81%AB%E3%82%88%E3%82%8B%E9%A1%94%E8%AA%8D%E8%AD%98/#:~:text=%E3%81%A6%E3%81%84%E3%81%8D%E3%81%BE%E3%81%99%E3%80%82-,RetinaFace%EF%BC%88retina%2Dface%EF%BC%89%E3%81%A8%E3%81%AF%EF%BC%9F,%E8%AA%8D%E8%AD%98%E3%83%A9%E3%82%A4%E3%83%96%E3%83%A9%E3%83%AA%E3%81%A8%E3%81%84%E3%81%86%E3%81%93%E3%81%A8%E3%81%A7%E3%81%99%E3%80%82
     def arrange_to_square(self,img_path):
         """
         顔を左右の中心にして360*360に切り出す
+        顔が複数検知された場合はその写真を無視する
         """
         img= cv2.imread(img_path)
         resp = RetinaFace.detect_faces(img_path, threshold = 0.95)
@@ -53,6 +59,9 @@ class cutImage():
         return cv2.resize(cut_img,(360,360))
     
     def save_square(self,tile):
+        """
+        得られた正方形の写真を保存する
+        """
         dirpath = "./squares/"+self.name
         if not os.path.exists(dirpath):
             os.mkdir(dirpath)

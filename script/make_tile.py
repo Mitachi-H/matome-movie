@@ -1,5 +1,4 @@
 import cv2,json,os,glob
-import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
@@ -14,10 +13,13 @@ class makeTile():
         self.arranged = arranged
 
     def __call__(self):
+        """
+        エピソードと写真を取得し、それらを組み合わせてtileを作成する。
+        """
         self.open_wikiList()
         files = glob.glob("./squares/"+self.name+"/*")
         for i,img_path in enumerate(files):
-            #title によって場合分け
+            #title によって場合分けを今後追加したい
             tile = self.make_tile(img_path,self.title)
             try:
                 text = self.wikiList[i-1]
@@ -34,6 +36,10 @@ class makeTile():
 
 
     def open_wikiList(self):
+        """
+        保存したwikiListをロードする
+        arrangedしたものを使うかによってロードするファイルを変える
+        """
         if self.arranged:
             f = open("./arranged_wikiList/"+self.name+".json","r")
         else:
@@ -41,6 +47,9 @@ class makeTile():
         self.wikiList= json.load(f)
     
     def make_tile(self,img_path,title):
+        """
+        正方形の写真を縦長の黒い画像と合成してtileの下地を作る
+        """
         img = cv2.imread(img_path)
         if img is None:
             return None
@@ -56,6 +65,9 @@ class makeTile():
 
     # 参考記事　https://qiita.com/mo256man/items/82da5138eeacc420499d
     def put_text(self,tile, lineList, y_start, fontFace, fontScale, color):
+        """
+        文章リスト、フォントのファイルパス、大きさ、色を取得して適切な場所に配置する
+        """
         img_height,img_length,_ = tile.shape
         imgPIL = Image.fromarray(tile)
         draw = ImageDraw.Draw(imgPIL)
@@ -78,12 +90,18 @@ class makeTile():
         return np.array(imgPIL, dtype = np.uint8)
     
     def convert_to_lineList(self,text,max_word_num = 13):
+        """
+        文章を10文字ずつに切り分けてリストに変換する
+        """
         line = len(text)//max_word_num
         # mecab を用いて、切り方の工夫しても良い
         lineList = [text[i*max_word_num:((i+1)*max_word_num if i!=line else len(text))] for i in range(0,line+1)]
         return lineList
 
     def save_tile(self,tile):
+        """
+        作ったtileをファイルに保存する
+        """
         dirpath = "./tiles/"+self.name
         if not os.path.exists(dirpath):
             os.mkdir(dirpath)
