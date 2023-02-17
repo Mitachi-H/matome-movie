@@ -11,7 +11,11 @@ class downloadWiki():
         self.hashtagList = []
         self.image_num = 0
     
-    def __call__(self,least_num=8):
+    def __call__(self,least_num=8) -> int:
+        """
+        エピソードや説明をファイルに保存
+        エピソード数に合わせて、必要になる写真の枚数を返す
+        """
         self.get_soup()
         self.main()
         if self.image_num >= least_num:
@@ -19,12 +23,23 @@ class downloadWiki():
         return self.image_num
 
     def get_soup(self):
+        """
+        Wikipediaにアクセスし、HTPLをSopuオブジェクトに変換
+        """
         r = requests.get(self.url)
         # HTTPerror 処理
         r.raise_for_status()
         self.soup = BeautifulSoup(r.text,"html.parser")
 
     def main(self):
+        """
+        HTML解析
+        エピソードのあるElementを抽出し、そのTagによって
+        適切な関数にElementを渡す
+
+        またカテゴリも同時に抽出し、それをyoutubeのタグとして利用するべく
+        update_hashtagに渡す
+        """
         # タグ抽出
         for li in self.soup.select("div.mw-normal-catlinks > ul > li"):
             self.update_hashtag(li.get_text())
@@ -49,11 +64,19 @@ class downloadWiki():
                     self.getEpisode_from_p(ul)
     
     def getEpisode_from_ul(self,ul):
+        """
+        ul Tagの要素からtextを抜き出す
+        textを update_wiki に渡す
+        """
         for li in ul.children:
             text = li.get_text()
             self.update_wiki(text)
 
     def getEpisode_from_p(self,ul):
+        """
+        ul Tagでない要素（pの羅列など）からtextを抜き出す
+        textを update_wiki に渡す
+        """
         tag=ul.next_sibling
         #hタグまでのp要素を取得
         while not str(tag).startswith("<h"):
@@ -63,6 +86,9 @@ class downloadWiki():
             tag = tag.next_sibling
     
     def update_wiki(self,text):
+        """
+        textを適切に加工し wikiLIst wikiに保存する
+        """
         # 引用マーク削除
         text = re.sub(r"\[\d*?\]","",text)
         #　改行削除
@@ -80,6 +106,9 @@ class downloadWiki():
                 self.image_num+=1
     
     def update_hashtag(self,text):
+        """
+        カテゴリを適切に加工し、hashtagとして有用なものとして保存する
+        """
         if text.startswith("日本の"):
             text = text.replace("日本の","")
         if text.endswith("の人物"):
@@ -88,6 +117,9 @@ class downloadWiki():
         pass
 
     def split_text(self,text):
+        """
+        長すぎるエピソードを 。 で区切って分割して返す
+        """
         chunk = ""
         # かぎかっこ内のフラッグ
         flag = False
@@ -108,6 +140,9 @@ class downloadWiki():
         return textList
         
     def save_wiki_and_hashtag(self):
+        """
+        取得した、エピソード（一つのパラグラフ化したもの）、エピソードのリスト、hashtagリストを保存する
+        """
         with open("./wikis/"+self.name+".txt","w") as f:
             f.write(self.wiki)
 
