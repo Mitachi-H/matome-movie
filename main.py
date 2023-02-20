@@ -29,17 +29,17 @@ def delete_files(dir_names):
                 cv2.imwrite('./images/blank_tile.jpg',blank_tile)
                 cv2.imwrite('./images/blank_movie.jpg',blank_movie)
 
-# delete_files({
-#         "arranged_wikiList":True,
-#         "description":True,
-#         "hashtagList":True,
-#         "images":True,
-#         "movies":True,
-#         "squares":True,
-#         "tiles":True,
-#         "wikiList":True,
-#         "wikis":True,
-# })
+delete_files({
+        "arranged_wikiList":True,
+        "description":True,
+        "hashtagList":True,
+        "images":True,
+        "movies":True,
+        "squares":True,
+        "tiles":True,
+        "wikiList":True,
+        "wikis":True,
+})
 
 def main(persons,arranged = False,least_num=8):
     """
@@ -52,7 +52,7 @@ def main(persons,arranged = False,least_num=8):
             if arranged:
                 image_num = arrangeText(person)()
 
-        except (ValueError,HTTPError) as E:
+        except (ValueError,HTTPError,FileNotFoundError) as E:
             print(E)
             print(f"人物：{person}--Wikipediaにアクセスできないか、または情報が不十分です--")
             continue
@@ -66,5 +66,5 @@ def main(persons,arranged = False,least_num=8):
             print(f"人物：{person}--textが十分でない可能性があります--")
         makeVideo(person)()
 
-persons = []
-main(persons)
+# persons = ['川島永嗣', '山根視来', '谷口彰悟', '板倉滉', '長友佑都', '遠藤航', '柴崎岳', '堂安律', '三笘薫', '南野拓実', '久保建英', '権田修一', '守田英正', '伊東純也', '鎌田大地', '冨安健洋', '田中碧', '浅野拓磨', '酒井宏樹', '町野修斗', '上田綺世', '吉田麻也', 'シュミット・ダニエル', '相馬勇紀', '前田大然', '伊藤洋輝']
+# main(persons)
