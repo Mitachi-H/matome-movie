@@ -8,7 +8,6 @@ class downloadWiki():
         self.soup = None
         self.wiki = ""
         self.wikiList = []
-        self.hashtagList = []
         self.image_num = 0
     
     def __call__(self,least_num=8) -> int:
@@ -36,13 +35,7 @@ class downloadWiki():
         HTML解析
         エピソードのあるElementを抽出し、そのTagによって
         適切な関数にElementを渡す
-
-        またカテゴリも同時に抽出し、それをyoutubeのタグとして利用するべく
-        update_hashtagに渡す
         """
-        # タグ抽出
-        for li in self.soup.select("div.mw-normal-catlinks > ul > li"):
-            self.update_hashtag(li.get_text())
         # 動画文章抽出
         for subNode in self.soup.select("a.vector-toc-link"):
             subtitle = subNode.get_text().strip()
@@ -105,16 +98,6 @@ class downloadWiki():
                 self.wikiList.append(text)
                 self.image_num+=1
     
-    def update_hashtag(self,text):
-        """
-        カテゴリを適切に加工し、hashtagとして有用なものとして保存する
-        """
-        if text.startswith("日本の"):
-            text = text.replace("日本の","")
-        if text.endswith("の人物"):
-            text = text.replace("の人物","")
-        self.hashtagList.append(text)
-        pass
 
     def split_text(self,text):
         """
@@ -148,8 +131,5 @@ class downloadWiki():
 
         with open("./wikiList/"+self.name+".json","w") as f:
             json.dump(self.wikiList,f,ensure_ascii=False)
-
-        with open("./hashtagList/"+self.name+".json","w") as f:
-            json.dump(self.hashtagList,f,ensure_ascii=False)
         
     
