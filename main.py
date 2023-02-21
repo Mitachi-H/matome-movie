@@ -3,7 +3,6 @@ import numpy as np
 
 from requests.exceptions import HTTPError
 from script.download_wiki import downloadWiki
-from script.make_description import makeDescription
 from script.arrange_text import arrangeText
 from script.download_image import downloadImage
 from script.cut_image import cutImage
@@ -31,7 +30,6 @@ def delete_files(dir_names):
 
 delete_files({
         "arranged_wikiList":True,
-        "description":True,
         "hashtagList":True,
         "images":True,
         "movies":True,
